@@ -298,7 +298,7 @@ local bar = Instance.new("Frame")
             lebron = true
             pcall(function() frame:Destroy() end)
             remove_node_by_id(id)
-        end]
+        end
 
         if length and length > 0 then
             spawn(function()
