@@ -38,7 +38,7 @@ local function init()
     screen.ResetOnSpawn = false
     screen.DisplayOrder = 2147483647
     
-    local function setParent(sg)
+    local function zawarudo(sg)
         if has_syn then
             pcall(function() syn.protect_gui(sg) end)
         end
@@ -49,18 +49,14 @@ local function init()
         if has_gethui then
             local ok2, gui = pcall(function() return gethui() end)
             if ok2 and gui and pcall(function() sg.Parent = gui end) then
-                return true
-            end
-        end
+            return true end end
         if you and you:FindFirstChild("PlayerGui") then
             sg.Parent = you:WaitForChild("PlayerGui")
-            return true
-        end
+            return true end
         sg.Parent = workspace
-        return false
-    end
+        return false end
 
-    setParent(screen)
+    zawarudo(screen)
 
     local container = Instance.new("Frame")
     container.Name = "cont"
@@ -77,7 +73,7 @@ local function init()
     local function getViewport()
         local cam = workspace.CurrentCamera
         if cam then
-            return cam.ViewportSize
+        return cam.ViewportSize
         end
         return Vector2.new(basew, 768)
     end
@@ -92,25 +88,24 @@ local function init()
         info = info or TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
         local ok, t = pcall(function() return tween:Create(inst, info, props) end)
         if ok and t then
-            t:Play()
-            return t
+        t:Play()
+        return t
         else
             for k, v in pairs(props) do
-                pcall(function() inst[k] = v end)
+            pcall(function() inst[k] = v end)
             end
             return nil
-        end
-    end
+        end end
 
     local function genId()
-        return tostring(math.floor(tick()*1000)) .. "-" .. http:GenerateGUID(false)
+    return tostring(math.floor(tick()*1000)) .. "-" .. http:GenerateGUID(false)
     end
 
     local function getSize()
-        local s = scale()
-        local w = math.clamp(320 * s, 200, 520)
-        local h = math.clamp(72 * s, 54, 140)
-        return w, h
+    local s = scale()
+    local w = math.clamp(320 * s, 200, 520)
+    local h = math.clamp(72 * s, 54, 140)
+    return w, h
     end
 
     local function restack()
@@ -119,23 +114,19 @@ local function init()
         for i = #active, 1, -1 do
             local node = active[i]
             if node and node.frame and node.frame.Parent then
-                local target_y = -12 - yoffset - node.sizeY
-                local target_pos = UDim2.new(1, -12, 1, target_y)
-                createTween(node.frame, {Position = target_pos}, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out))
-                yoffset = yoffset + node.sizeY + spacing
-            end
-        end
-    end
+            local target_y = -12 - yoffset - node.sizeY
+            local target_pos = UDim2.new(1, -12, 1, target_y)
+            createTween(node.frame, {Position = target_pos}, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out))
+            yoffset = yoffset + node.sizeY + spacing
+            end end end
 
     local function deregister(id)
         for i = 1, #active do
             if active[i].id == id then
-                table.remove(active, i)
-                break
-            end
-        end
-        restack()
-    end
+            table.remove(active, i)
+            break
+            end end
+        restack() end
 
     local notifs = {}
     function notifs.CreateNode(opts)
@@ -149,7 +140,6 @@ local function init()
         local bar_color = opts.BarColor or opts.barcolor or Color3.fromRGB(90, 170, 255)
 
         if length < 0 then length = 0 end
-
         local w, h = getSize()
 
         local frame = Instance.new("Frame")
@@ -166,14 +156,16 @@ local function init()
         corner.CornerRadius = UDim.new(0, 10)
         corner.Parent = frame
 
-        local left = Instance.new("ImageLabel")
-        left.Name = ""
-        left.BackgroundTransparency = 1
-        left.Size = UDim2.new(0, h, 1, 0)
-        left.Position = UDim2.new(0, 0, 0, 0)
-        left.Image = image_id and tostring(image_id) or ""
-                  left.ScaleType = Enum.ScaleType.Stretch
-        left.Parent = frame
+        
+
+		local left = Instance.new("ImageLabel")
+		left.Name = ""
+		left.BackgroundTransparency = 1
+		left.Size = UDim2.new(0, h, 1, 0)
+		left.Position = UDim2.new(0, 0, 0, 0)
+		left.Image = g0(image_id)
+		left.ScaleType = Enum.ScaleType.Stretch
+		left.Parent = frame
 
         local right = Instance.new("Frame")
         right.Name = "txtcont"
@@ -265,11 +257,10 @@ local function init()
         local function awaitRender()
             local attempts = 0
             while (frame.AbsoluteSize.X == 0 or frame.AbsoluteSize.Y == 0) and attempts < 60 do
-                run.RenderStepped:Wait()
-                attempts = attempts + 1
+            run.RenderStepped:Wait()
+            attempts = attempts + 1
             end
-            return frame.AbsoluteSize
-        end
+            return frame.AbsoluteSize end
         local abs = awaitRender()
         local sizeY = abs and abs.Y or h
 
@@ -284,13 +275,11 @@ local function init()
             for i = #active, 1, -1 do
                 local nd = active[i]
                 if nd.id == id then
-                    return -12 - yoff - nd.sizeY
+                return -12 - yoff - nd.sizeY
                 else
-                    yoff = yoff + nd.sizeY + spacing
-                end
-            end
-            return -12
-        end
+                yoff = yoff + nd.sizeY + spacing
+                end end
+            return -12 end
         
         frame.Position = UDim2.new(1, -12, 1, getTargetY() + 8)
         createTween(frame, {Position = UDim2.new(1, -12, 1, getTargetY())}, TweenInfo.new(0.28, Enum.EasingStyle.Back, Enum.EasingDirection.Out))
@@ -310,34 +299,45 @@ local function init()
                 local t3 = createTween(left, {ImageTransparency = 1}, outinfo)
                 local t4 = createTween(bar, {Size = UDim2.new(0, 0, 1, 0)}, outinfo)
                 if t1 then
-                    t1.Completed:Wait()
+                t1.Completed:Wait()
                 else
-                    run.RenderStepped:Wait()
-                end
-            end)
+                run.RenderStepped:Wait()
+                end end)
             closed = true
             pcall(function() frame:Destroy() end)
-            deregister(id)
-        end
+            deregister(id) end
 
+        local function g0(id)
+    	local gk = "rbxassetid://8990250018"
+    	if not id then return gk end
+    	local g2 = tostring(id)
+    	if g2:match("^rbxassetid://%d+$") then
+        return g2 end
+    	local g = tonumber(g2)
+    	if g then
+        local go = "rbxassetid://"..g
+        local ok, img = pcall(function()
+        local t = Instance.new("ImageLabel")
+        t.Image = go
+        return t.IsLoaded end)
+        if ok then
+        return go else
+        return gk end end
+        return gk end
 
         if length and length > 0 then
-            spawn(function()
+                spawn(function()
                 local start = tick()
                 local ok, barTween = pcall(function()
-                    return tween:Create(bar, TweenInfo.new(length, Enum.EasingStyle.Linear, Enum.EasingDirection.Out), {Size = UDim2.new(0, 0, 1, 0)})
+                return tween:Create(bar, TweenInfo.new(length, Enum.EasingStyle.Linear, Enum.EasingDirection.Out), {Size = UDim2.new(0, 0, 1, 0)})
                 end)
                 if ok and barTween then
-                    barTween:Play()
-                end
+                barTween:Play() end
                 while tick() - start < length and not closed do
-                    run.RenderStepped:Wait()
-                end
+                run.RenderStepped:Wait() end
                 if not closed then
-                    destroy()
-                end
-            end)
-        end
+                destroy()
+                end end) end
 
         local btn = Instance.new("TextButton")
         btn.Name = ""
@@ -347,22 +347,19 @@ local function init()
         btn.ZIndex = frame.ZIndex + 10
         btn.Parent = frame
         btn.MouseButton1Click:Connect(function()
-            destroy()
+        destroy()
         end)
 
         local handle = {}
         function handle:Close()
-            destroy()
+        destroy()
         end
         function handle:IsClosed()
-            return closed
+        return closed
         end
         function handle:GetFrame()
-            return frame
-        end
-
-        return handle
-    end
+        return frame end
+        return handle end
 
 
     local mt = getmetatable(notifs) or {}
@@ -372,12 +369,10 @@ local function init()
     function notifs.ClearAll()
         for i = #active, 1, -1 do
             pcall(function() active[i].frame:Destroy() end)
-            table.remove(active, i)
-        end
-    end
+        table.remove(active, i)
+        end end
 
-    return notifs
-end
+    return notifs end
 
 
 
