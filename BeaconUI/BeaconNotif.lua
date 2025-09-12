@@ -332,7 +332,7 @@ local sound = Instance.new("Sound")
             if not hideBar then bar.BackgroundColor3 = Color3.fromRGB(139,69,19) end
         	else
             frame.BackgroundColor3 = Color3.fromRGB(26,26,26)
-            if not hideBar then bar.BackgroundColor3 = Color3.fromRGB(90,170,255) endend
+            if not hideBar then bar.BackgroundColor3 = Color3.fromRGB(90,170,255) end end
 
 
 
