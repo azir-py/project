@@ -1,6 +1,5 @@
 
 local function init()
-    -- init()
     local players = game:GetService("Players")
     local tween = game:GetService("TweenService")
     local run = game:GetService("RunService")
@@ -55,7 +54,9 @@ local btn = Instance.new("TextButton")
         end
 
         sg.Parent = workspace
-        return false end
+        return false
+    end
+
     g(screen)
 
     
@@ -69,28 +70,31 @@ local btn = Instance.new("TextButton")
 
     local active = {}
 
-    local base = 1366
+    local BASE_WIDTH = 1366
     local function viewport_size()
         local cam = workspace.CurrentCamera
         if cam then
-        return cam.ViewportSize end
-        return Vector2.new(base, 768)
+            return cam.ViewportSize
+        end
+        return Vector2.new(BASE_WIDTH, 768)
     end
     local function scale()
         local v = viewport_size()
-        local s = math.clamp(math.min(v.X, v.Y) / base, 0.6, 1.6)
+        local s = math.clamp(math.min(v.X, v.Y) / BASE_WIDTH, 0.6, 1.6)
         return s
     end
-    local function anims(inst, props, info)
+    local function safe_tween(inst, props, info)
         info = info or TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
         local ok, t = pcall(function() return tween:Create(inst, info, props) end)
         if ok and t then
             t:Play()
-            return t else
+            return t
+        else
             for k, v in pairs(props) do
                 pcall(function() inst[k] = v end)
             end
-            return nil end
+            return nil
+        end
     end
 
     local function uid()
@@ -103,7 +107,7 @@ local btn = Instance.new("TextButton")
         local h = math.clamp(72 * s, 54, 140)
         return w, h
     end
-    local function calc()
+    local function restack()
         local spacing = 8 * scale()
         local yoffset = 0
         for i = #active, 1, -1 do
@@ -111,7 +115,7 @@ local btn = Instance.new("TextButton")
             if node and node.frame and node.frame.Parent then
                 local target_y = -12 - yoffset - node.sizeY
                 local target_pos = UDim2.new(1, -12, 1, target_y)
-                anims(node.frame, {Position = target_pos}, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out))
+                safe_tween(node.frame, {Position = target_pos}, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out))
                 yoffset = yoffset + node.sizeY + spacing
             end
         end
@@ -124,7 +128,7 @@ local btn = Instance.new("TextButton")
                 break
             end
         end
-        calc()
+        restack()
     end
 
     local notifs = {}
@@ -141,6 +145,7 @@ local btn = Instance.new("TextButton")
 
         local w, h = compute_size()
 
+        
         frame.Name = "notif_" .. uid()
         frame.BackgroundTransparency = 0
         frame.BackgroundColor3 = Color3.fromRGB(26,26,26)
@@ -154,6 +159,7 @@ local btn = Instance.new("TextButton")
         corner.CornerRadius = UDim.new(0, 10)
         corner.Parent = frame
 
+        
         left.Name = "left_image"
         left.BackgroundTransparency = 1
         left.Size = UDim2.new(0, h, 1, 0)
@@ -162,12 +168,14 @@ local btn = Instance.new("TextButton")
         left.ScaleType = Enum.ScaleType.Crop
         left.Parent = frame
 
+        
         right.Name = "text_holder"
         right.BackgroundTransparency = 1
         right.Position = UDim2.new(0, h + 8, 0, 8)
         right.Size = UDim2.new(1, -(h + 12), 1, -16)
         right.Parent = frame
 
+        
         titlelabel.Name = "title"
         titlelabel.BackgroundTransparency = 1
         titlelabel.Size = UDim2.new(1, 0, 0, math.floor(h*0.4))
@@ -180,6 +188,7 @@ local btn = Instance.new("TextButton")
         titlelabel.Text = title
         titlelabel.Parent = right
 
+        
         contentlabel.Name = "content"
         contentlabel.BackgroundTransparency = 1
         contentlabel.Size = UDim2.new(1, 0, 0, math.floor(h*0.5))
@@ -193,6 +202,7 @@ local btn = Instance.new("TextButton")
         contentlabel.TextWrapped = true
         contentlabel.Parent = right
 
+        
         shadow.Name = "shadow"
         shadow.BackgroundTransparency = 0.85
         shadow.BackgroundColor3 = Color3.fromRGB(0,0,0)
@@ -202,6 +212,7 @@ local btn = Instance.new("TextButton")
         shadow.ZIndex = frame.ZIndex - 1
         shadow.Parent = frame
 
+        
         barbg.Name = "bar_bg"
         barbg.BackgroundTransparency = 0.9
         barbg.BorderSizePixel = 0
@@ -209,6 +220,7 @@ local btn = Instance.new("TextButton")
         barbg.Position = UDim2.new(0, 0, 1, -4)
         barbg.Parent = frame
 
+        
         bar.Name = "bar"
         bar.BorderSizePixel = 0
         bar.Size = UDim2.new(1, 0, 1, 0)
@@ -217,6 +229,7 @@ local btn = Instance.new("TextButton")
         bar.BackgroundColor3 = Color3.fromRGB(90, 170, 255)
         bar.Parent = barbg
 
+        
         sound.Name = "notif_sound"
         sound.Looped = false
         if audio_id and tostring(audio_id) ~= "" then
@@ -228,8 +241,9 @@ local btn = Instance.new("TextButton")
         if always then
             pcall(function() screen.DisplayOrder = 2147483647 end)
             if good then
-            pcall(function() syn.protect_gui(screen) end) end 
-		end
+                pcall(function() syn.protect_gui(screen) end)
+            end
+        end
         frame.Parent = container
         if not image_id or tostring(image_id) == "" then
             left.Visible = false
@@ -243,14 +257,16 @@ local btn = Instance.new("TextButton")
             local attempts = 0
             while (frame.AbsoluteSize.X == 0 or frame.AbsoluteSize.Y == 0) and attempts < 60 do
                 run.RenderStepped:Wait()
-                attempts = attempts + 1 end
-            return frame.AbsoluteSize end
+                attempts = attempts + 1
+            end
+            return frame.AbsoluteSize
+        end
         local abs = wait_for_abs()
         local sizeY = abs and abs.Y or h
 
         local id = uid()
         table.insert(active, {id = id, frame = frame, sizeY = sizeY})
-        calc()
+        restack()
         local final_y = -12
         local function calc_target_for_id()
             local spacing = 8 * scale()
@@ -263,29 +279,31 @@ local btn = Instance.new("TextButton")
                     yoff = yoff + nd.sizeY + spacing
                 end
             end
-            return -12 end
+            return -12
+        end
         frame.Position = UDim2.new(1, -12, 1, calc_target_for_id() + 8)
-        anims(frame, {Position = UDim2.new(1, -12, 1, calc_target_for_id())}, TweenInfo.new(0.28, Enum.EasingStyle.Back, Enum.EasingDirection.Out))
+        safe_tween(frame, {Position = UDim2.new(1, -12, 1, calc_target_for_id())}, TweenInfo.new(0.28, Enum.EasingStyle.Back, Enum.EasingDirection.Out))
 
         local closed = false
         local gandalf = false
 
-        local function togl()
+        local function do_close()
             if closed or gandalf then return end
             gandalf = true
             local outinfo = TweenInfo.new(0.35, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
             pcall(function() if sound.IsPlaying then sound:Stop() end end)
-            anims(frame, {Position = UDim2.new(1, 16, frame.Position.Y.Scale, frame.Position.Y.Offset), BackgroundTransparency = 1}, outinfo)
+            safe_tween(frame, {Position = UDim2.new(1, 16, frame.Position.Y.Scale, frame.Position.Y.Offset), BackgroundTransparency = 1}, outinfo)
             pcall(function()
-                local t1 = anims(titlelabel, {TextTransparency = 1}, outinfo)
-                local t2 = anims(contentlabel, {TextTransparency = 1}, outinfo)
-                local t3 = anims(left, {ImageTransparency = 1}, outinfo)
-                local t4 = anims(bar, {Size = UDim2.new(0, 0, 1, 0)}, outinfo)
+                local t1 = safe_tween(titlelabel, {TextTransparency = 1}, outinfo)
+                local t2 = safe_tween(contentlabel, {TextTransparency = 1}, outinfo)
+                local t3 = safe_tween(left, {ImageTransparency = 1}, outinfo)
+                local t4 = safe_tween(bar, {Size = UDim2.new(0, 0, 1, 0)}, outinfo)
                 if t1 then
                     t1.Completed:Wait()
                 else
                     run.RenderStepped:Wait()
-                end end)
+                end
+            end)
 
             closed = true
             pcall(function() frame:Destroy() end)
@@ -304,7 +322,7 @@ local btn = Instance.new("TextButton")
                     run.RenderStepped:Wait()
                 end
                 if not closed then
-                    togl()
+                    do_close()
                 end
             end)
         end 
@@ -316,16 +334,19 @@ local btn = Instance.new("TextButton")
         btn.ZIndex = frame.ZIndex + 10
         btn.Parent = frame
         btn.MouseButton1Click:Connect(function()
-            togl()
+            do_close()
         end)
 
         local handle = {}
         function handle:Close()
-        togl() end
+            do_close()
+        end
         function handle:IsClosed()
-        return closed end
+            return closed
+        end
         function handle:GetFrame()
-        return frame end
+            return frame
+        end
 
         return handle
     end
@@ -338,8 +359,6 @@ local btn = Instance.new("TextButton")
             table.remove(active, i)
         end end
 
-    return notifs end
-
-
-
+    return notifs
+end
 return init()
