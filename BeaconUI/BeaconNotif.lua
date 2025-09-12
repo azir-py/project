@@ -172,7 +172,7 @@ local function init()
         left.Size = UDim2.new(0, h, 1, 0)
         left.Position = UDim2.new(0, 0, 0, 0)
         left.Image = image_id and tostring(image_id) or ""
-        left.ScaleType = Enum.ScaleType.Crop
+                  left.ScaleType = Enum.ScaleType.Stretch
         left.Parent = frame
 
         local right = Instance.new("Frame")
