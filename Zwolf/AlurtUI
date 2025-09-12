@@ -83,6 +83,23 @@ local function init()
         return s
     end
 
+        local function g0(id)
+    	local gk = "rbxassetid://8990250018"
+    	if not id then return gk end
+    	local g2 = tostring(id)
+    	if g2:match("^rbxassetid://%d+$") then
+        return g2 end
+    	local g = tonumber(g2)
+    	if g then
+        local go = "rbxassetid://"..g
+        local ok, img = pcall(function()
+        local t = Instance.new("ImageLabel")
+        t.Image = go
+        return t.IsLoaded end)
+        if ok then
+        return go else
+        return gk end end
+        return gk end
 
     local function createTween(inst, props, info)
         info = info or TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
@@ -307,23 +324,7 @@ local function init()
             pcall(function() frame:Destroy() end)
             deregister(id) end
 
-        local function g0(id)
-    	local gk = "rbxassetid://8990250018"
-    	if not id then return gk end
-    	local g2 = tostring(id)
-    	if g2:match("^rbxassetid://%d+$") then
-        return g2 end
-    	local g = tonumber(g2)
-    	if g then
-        local go = "rbxassetid://"..g
-        local ok, img = pcall(function()
-        local t = Instance.new("ImageLabel")
-        t.Image = go
-        return t.IsLoaded end)
-        if ok then
-        return go else
-        return gk end end
-        return gk end
+        
 
         if length and length > 0 then
                 spawn(function()
