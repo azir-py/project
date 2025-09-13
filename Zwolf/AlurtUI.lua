@@ -1,0 +1,521 @@
+--[[
+          _____                    _____            _____                    _____                _____          
+         /\    \                  /\    \          /\    \                  /\    \              /\    \         
+        /::\    \                /::\____\        /::\____\                /::\    \            /::\    \        
+       /::::\    \              /:::/    /       /:::/    /               /::::\    \           \:::\    \       
+      /::::::\    \            /:::/    /       /:::/    /               /::::::\    \           \:::\    \      
+     /:::/\:::\    \          /:::/    /       /:::/    /               /:::/\:::\    \           \:::\    \     
+    /:::/__\:::\    \        /:::/    /       /:::/    /               /:::/__\:::\    \           \:::\    \    
+   /::::\   \:::\    \      /:::/    /       /:::/    /               /::::\   \:::\    \          /::::\    \   
+  /::::::\   \:::\    \    /:::/    /       /:::/    /      _____    /::::::\   \:::\    \        /::::::\    \  
+ /:::/\:::\   \:::\    \  /:::/    /       /:::/____/      /\    \  /:::/\:::\   \:::\____\      /:::/\:::\    \ 
+/:::/  \:::\   \:::\____\/:::/____/       |:::|    /      /::\____\/:::/  \:::\   \:::|    |    /:::/  \:::\____\
+\::/    \:::\  /:::/    /\:::\    \       |:::|____\     /:::/    /\::/   |::::\  /:::|____|   /:::/    \::/    /
+ \/____/ \:::\/:::/    /  \:::\    \       \:::\    \   /:::/    /  \/____|:::::\/:::/    /   /:::/    / \/____/ 
+          \::::::/    /    \:::\    \       \:::\    \ /:::/    /         |:::::::::/    /   /:::/    /          
+           \::::/    /      \:::\    \       \:::\    /:::/    /          |::|\::::/    /   /:::/    /           
+           /:::/    /        \:::\    \       \:::\__/:::/    /           |::| \::/____/    \::/    /            
+          /:::/    /          \:::\    \       \::::::::/    /            |::|  ~|           \/____/             
+         /:::/    /            \:::\    \       \::::::/    /             |::|   |                               
+        /:::/    /              \:::\____\       \::::/    /              \::|   |                               
+        \::/    /                \::/    /        \::/____/                \:|   |                               
+         \/____/                  \/____/          ~~                       \|___| Zwolf (@bbL123)
+]]                                                                                                                                     
+
+local function init()
+    local players = game:GetService("Players")
+    local tween = game:GetService("TweenService")
+    local run = game:GetService("RunService")
+    local http = game:GetService("HttpService")
+    local you = players.LocalPlayer
+    local has_syn = type(syn) == "table" and type(syn.protect_gui) == "function"
+    local has_gethui = type(gethui) == "function"
+    local has_gethui2 = false
+    pcall(function() if gethui then has_gethui2 = true end end)
+
+    local screen = Instance.new("ScreenGui")
+    screen.Name = ""
+    screen.ResetOnSpawn = false
+    screen.DisplayOrder = 2147483647
+    
+    local function zawarudo(sg)
+        if has_syn then
+            pcall(function() syn.protect_gui(sg) end)
+        end
+        local ok, core = pcall(function() return game:GetService("CoreGui") end)
+        if ok and core and pcall(function() sg.Parent = core end) then
+            return true
+        end
+        if has_gethui then
+            local ok2, gui = pcall(function() return gethui() end)
+            if ok2 and gui and pcall(function() sg.Parent = gui end) then
+            return true end end
+        if you and you:FindFirstChild("PlayerGui") then
+            sg.Parent = you:WaitForChild("PlayerGui")
+            return true end
+        sg.Parent = workspace
+        return false end
+
+    zawarudo(screen)
+
+    local container = Instance.new("Frame")
+    container.Name = "cont"
+    container.BackgroundTransparency = 1
+    container.AnchorPoint = Vector2.new(1, 1)
+    container.Position = UDim2.new(1, -12, 1, -12)
+    container.Size = UDim2.new(0, 320, 0, 200)
+    container.ClipsDescendants = false
+    container.Parent = screen
+
+    local active = {}
+
+    local basew = 1366
+    local function getViewport()
+        local cam = workspace.CurrentCamera
+        if cam then
+        return cam.ViewportSize
+        end
+        return Vector2.new(basew, 768)
+    end
+    local function scale()
+        local v = getViewport()
+        local s = math.clamp(math.min(v.X, v.Y) / basew, 0.6, 1.6)
+        return s
+    end
+
+        local function g0(id)
+    	local gk = "rbxassetid://8990250018"
+    	if not id then return gk end
+    	local g2 = tostring(id)
+    	if g2:match("^rbxassetid://%d+$") then
+        return g2 end
+    	local g = tonumber(g2)
+    	if g then
+        local go = "rbxassetid://"..g
+        local ok, img = pcall(function()
+        local t = Instance.new("ImageLabel")
+        t.Image = go
+        return t.IsLoaded end)
+        if ok then
+        return go else
+        return gk end end
+        return gk end
+
+    local function createTween(inst, props, info)
+        info = info or TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+        local ok, t = pcall(function() return tween:Create(inst, info, props) end)
+        if ok and t then
+        t:Play()
+        return t
+        else
+            for k, v in pairs(props) do
+            pcall(function() inst[k] = v end)
+            end
+            return nil
+        end end
+
+    local function genId()
+    return tostring(math.floor(tick()*1000)) .. "-" .. http:GenerateGUID(false)
+    end
+
+    local function getSize()
+    local s = scale()
+    local w = math.clamp(320 * s, 200, 520)
+    local h = math.clamp(72 * s, 54, 140)
+    return w, h
+    end
+
+    local function restack()
+        local spacing = 8 * scale()
+        local yoffset = 0
+        for i = #active, 1, -1 do
+            local node = active[i]
+            if node and node.frame and node.frame.Parent then
+            local target_y = -12 - yoffset - node.sizeY
+            local target_pos = UDim2.new(1, -12, 1, target_y)
+            createTween(node.frame, {Position = target_pos}, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out))
+            yoffset = yoffset + node.sizeY + spacing
+            end end end
+
+    local function deregister(id)
+        for i = 1, #active do
+            if active[i].id == id then
+            table.remove(active, i)
+            break
+            end end
+        restack() end
+
+    local notifs = {}
+    function notifs.CreateNode(opts)
+        opts = opts or {}
+        local title = tostring(opts.Title or opts.title or "Notification")
+        local content = tostring(opts.Content or opts.content or "")
+        local audio_id = opts.Audio or opts.audio
+        local image_id = opts.Image or opts.image
+        local length = tonumber(opts.Length or opts.length) or 5
+        local always = (opts.AlwaysOnTop ~= nil) and (opts.AlwaysOnTop or opts.alwaysontop or opts.always) or false
+        local bar_color = opts.BarColor or opts.barcolor or Color3.fromRGB(90, 170, 255)
+
+        if length < 0 then length = 0 end
+        local w, h = getSize()
+
+        local frame = Instance.new("Frame")
+        frame.Name = "beacon." .. genId()
+        frame.BackgroundTransparency = 0
+        frame.BackgroundColor3 = Color3.fromRGB(26,26,26)
+        frame.BorderSizePixel = 0
+        frame.Size = UDim2.new(0, w, 0, h)
+        frame.AnchorPoint = Vector2.new(1, 1)
+        frame.Position = UDim2.new(1, -12, 1, -12 - h - 16)
+        frame.ClipsDescendants = false
+
+        local corner = Instance.new("UICorner")
+        corner.CornerRadius = UDim.new(0, 10)
+        corner.Parent = frame
+
+        local vb = Instance.new("ImageLabel")
+        vb.Name = ""
+        vb.AnchorPoint = Vector2.new(0.5, 0.5)
+        vb.Position = UDim2.new(0.5, 0, 0.5, 0)
+        vb.Size = UDim2.new(0, 352, 0, 165)
+        vb.BackgroundTransparency = 1
+		vb.ImageTransparency = 0.7
+        vb.Image = "rbxassetid://11509756389"
+        vb.ImageColor3 = Color3.fromRGB(84.67, 84.67, 84.67)
+        vb.ZIndex = 0
+        vb.Parent = frame
+
+		local left = Instance.new("ImageLabel")
+		left.Name = ""
+		left.BackgroundTransparency = 1
+		left.Size = UDim2.new(0, h, 1, 0)
+		left.Position = UDim2.new(0, 0, 0, 0)
+		left.Image = g0(image_id)
+		left.ScaleType = Enum.ScaleType.Stretch
+		left.Parent = frame
+
+        local right = Instance.new("Frame")
+        right.Name = "txtcont"
+        right.BackgroundTransparency = 1
+        right.Position = UDim2.new(0, h + 8, 0, 8)
+        right.Size = UDim2.new(1, -(h + 12), 1, -16)
+        right.Parent = frame
+
+        local titlelabel = Instance.new("TextLabel")
+        titlelabel.Name = "wrk"
+        titlelabel.BackgroundTransparency = 1
+        titlelabel.Size = UDim2.new(1, 0, 0, math.floor(h*0.4))
+        titlelabel.Position = UDim2.new(0, 0, 0, 0)
+        titlelabel.Font = Enum.Font.Code
+        titlelabel.TextSize = math.clamp(14 * scale(), 12, 20)
+        titlelabel.TextXAlignment = Enum.TextXAlignment.Left
+        titlelabel.TextYAlignment = Enum.TextYAlignment.Top
+        titlelabel.TextColor3 = Color3.fromRGB(255,255,255)
+        titlelabel.Text = title
+        titlelabel.Parent = right
+
+        local contentlabel = Instance.new("TextLabel")
+        contentlabel.Name = ""
+        contentlabel.BackgroundTransparency = 1
+        contentlabel.Size = UDim2.new(1, 0, 0, math.floor(h*0.5))
+        contentlabel.Position = UDim2.new(0, 0, 0, math.floor(h*0.4))
+        contentlabel.Font = Enum.Font.Code
+        contentlabel.TextSize = math.clamp(12 * scale(), 10, 16)
+        contentlabel.TextXAlignment = Enum.TextXAlignment.Left
+        contentlabel.TextYAlignment = Enum.TextYAlignment.Top
+        contentlabel.TextColor3 = Color3.fromRGB(200,200,200)
+        contentlabel.Text = content
+        contentlabel.TextWrapped = true
+        contentlabel.Parent = right
+
+        local shadow = Instance.new("Frame")
+        shadow.Name = ""
+        shadow.BackgroundTransparency = 0.85
+        shadow.BackgroundColor3 = Color3.fromRGB(0,0,0)
+        shadow.BorderSizePixel = 0
+        shadow.Size = UDim2.new(1, 4, 1, 4)
+        shadow.Position = UDim2.new(0, -2, 0, -2)
+        shadow.ZIndex = frame.ZIndex - 1
+        shadow.Parent = frame
+
+        local barbg = Instance.new("Frame")
+        barbg.Name = "bg"
+        barbg.BackgroundTransparency = 0.9
+        barbg.BorderSizePixel = 0
+        barbg.Size = UDim2.new(1, 0, 0, 4)
+        barbg.Position = UDim2.new(0, 0, 1, -4)
+        barbg.Parent = frame
+
+        local bar = Instance.new("Frame")
+        bar.Name = "bar"
+        bar.BorderSizePixel = 0
+        bar.Size = UDim2.new(1, 0, 1, 0)
+        bar.Position = UDim2.new(0, 0, 0, 0)
+        bar.BackgroundTransparency = 0
+        bar.BackgroundColor3 = bar_color
+        bar.Parent = barbg
+
+        local sound = Instance.new("Sound")
+        sound.Name = ""
+        sound.Looped = false
+        if audio_id and tostring(audio_id) ~= "" then
+            sound.SoundId = tostring(audio_id)
+            sound.Volume = 1
+        end
+        sound.Parent = frame
+
+        if always then
+            pcall(function() screen.DisplayOrder = 2147483647 end)
+            if has_syn then
+                pcall(function() syn.protect_gui(screen) end)
+            end
+        end
+
+        frame.Parent = container
+
+        if not image_id or tostring(image_id) == "" then
+            left.Visible = true
+            right.Position = UDim2.new(0, 8, 0, 8)
+            right.Size = UDim2.new(1, -16, 1, -16)
+        end
+
+        pcall(function() if sound.SoundId and sound.SoundId ~= "" then sound:Play() end end)
+
+        local function awaitRender()
+            local attempts = 0
+            while (frame.AbsoluteSize.X == 0 or frame.AbsoluteSize.Y == 0) and attempts < 60 do
+            run.RenderStepped:Wait()
+            attempts = attempts + 1
+            end
+            return frame.AbsoluteSize end
+        local abs = awaitRender()
+        local sizeY = abs and abs.Y or h
+
+        local id = genId()
+        table.insert(active, {id = id, frame = frame, sizeY = sizeY})
+
+        restack()
+
+        local function getTargetY()
+            local spacing = 8 * scale()
+            local yoff = 0
+            for i = #active, 1, -1 do
+                local nd = active[i]
+                if nd.id == id then
+                return -12 - yoff - nd.sizeY
+                else
+                yoff = yoff + nd.sizeY + spacing
+                end end
+            return -12 end
+        
+        frame.Position = UDim2.new(1, -12, 1, getTargetY() + 8)
+        createTween(frame, {Position = UDim2.new(1, -12, 1, getTargetY())}, TweenInfo.new(0.28, Enum.EasingStyle.Back, Enum.EasingDirection.Out))
+
+        local closed = false
+        local tweening_out = false
+
+        local function destroy()
+            if closed or tweening_out then return end
+            tweening_out = true
+            local outinfo = TweenInfo.new(0.35, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
+            pcall(function() if sound.IsPlaying then sound:Stop() end end)
+            createTween(frame, {Position = UDim2.new(1, 16, frame.Position.Y.Scale, frame.Position.Y.Offset), BackgroundTransparency = 1}, outinfo)
+            pcall(function()
+                local t1 = createTween(titlelabel, {TextTransparency = 1}, outinfo)
+                local t2 = createTween(contentlabel, {TextTransparency = 1}, outinfo)
+                local t3 = createTween(left, {ImageTransparency = 1}, outinfo)
+                local t4 = createTween(bar, {Size = UDim2.new(0, 0, 1, 0)}, outinfo)
+				local t5 = createTween(vb, {ImageTransparency = 1}, outinfo)
+                if t1 then
+                t1.Completed:Wait()
+                else
+                run.RenderStepped:Wait()
+                end end)
+			    if #active == 0 then
+                pcall(function() screen:Destroy() end) end
+
+            closed = true
+            pcall(function() frame:Destroy() end)
+            deregister(id) end
+
+        
+
+        if length and length > 0 then
+                spawn(function()
+                local start = tick()
+                local ok, barTween = pcall(function()
+                return tween:Create(bar, TweenInfo.new(length, Enum.EasingStyle.Linear, Enum.EasingDirection.Out), {Size = UDim2.new(0, 0, 1, 0)})
+                end)
+                if ok and barTween then
+                barTween:Play() end
+                while tick() - start < length and not closed do
+                run.RenderStepped:Wait() end
+                if not closed then
+                destroy()
+                end end) end
+
+        local btn = Instance.new("TextButton")
+        btn.Name = ""
+        btn.Size = UDim2.new(1, 0, 1, 0)
+        btn.BackgroundTransparency = 1
+        btn.Text = ""
+        btn.ZIndex = frame.ZIndex + 10
+        btn.Parent = frame
+        btn.MouseButton1Click:Connect(function()
+        destroy()
+        end)
+
+        local handle = {}
+        function handle:Close()
+        destroy()
+        end
+        function handle:IsClosed()
+        return closed
+        end
+        function handle:GetFrame()
+        return frame end
+        return handle end
+
+
+    local mt = getmetatable(notifs) or {}
+    mt.__call = function(self, opts) return self.CreateNode(opts) end
+    setmetatable(notifs, mt)
+
+    function notifs.ClearAll()
+        for i = #active, 1, -1 do
+            pcall(function() active[i].frame:Destroy() end)
+        table.remove(active, i)
+        end end
+
+    return notifs end
+
+
+
+return init()
+                                                                                                                                                                                                                                                                                                                                                                                                                
+                                                                                                                                                                                                                                                                                                                                                                                                                
+                                                                                                                                                                                                                                                                                                                                                                                                                
+                                                                                                                                                                                                                                                                                                                                                                                                                
+                                                                                                                                                                                                                                                                                                                                                                                                                
+--[[                                                                                                                                                                                                                                                                                                                                                                                                                
+                                                                                                                                                                                                                                                                                                                                                                                                                
+                                                                                                                                                                                                                                                                                                                                                                                                                
+                                                                                                                                                                                                                                                                                                                                                                                                                
+                                                                                                                                                                                                                                                                                                                                                                                                                
+                                                                                                                                                                                                                                                                                                                                                                                                                
+                                                                                                                                                                                                                                                                                                                                                                                                                
+                                                                                                                                                                                                                                                                                                                                                                                                                
+                                                                                                                                                                                                                                                                                                                                                                                                                
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@%%%@*-+#+-:.                                                             .:..--...                          ..     ....                              .::....:......:--..                                ..        ......
+████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████▓▒▓▓▓░░░                                                             ░░░░▒▒░░░                          ░░     ░░░░                              ░░░░░░░░░░░░░░░▒░░░                                ░░        ░░░░░░
+██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████▓▒░                   ░░░░                                             ░░░░▒▓▓▒░░                          ░      ░░░                         ░░░░░░░░░░░░░░░░░░░▒▒▒▒░░               ░                       ░░░░░░░░
+██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████▒                      ░░     ░░░    ░░░                                 ░░░░▒▓▒░                                                         ░    ░░░░░░░░░░░░░░░░░░░▒░░░░░░░     ░░░░░░░                        ░░░ ░░░ 
+█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████▒░                     ░░░     ░     ░░░                                   ░░░░░░                                  ░░      ░░░░░  ░            ░░░░░░░░░░░░░░░░░░░▒░░▒█▒░░░░░  ░░░░░░                  ░░░       ░░░░░ 
+█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████▒▒███████▓░       ░░ ░░░░                                                           ░░░                                 ░░░░░    ░░░░░░░░░░░       ░  ░░░░░░░░░░░░░▓▓▒░▒▒▒░▒██▒░░░░░░  ░░░                     ░░░       ░░░░░░
+████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████▓  ▓███▓▓▓▒░ ░░     ░░░░░░░                              ░               ░                                           ░░░         ░░░░░░░░░░░░░         ░░░░▒▒░░░░░░▓█▓░░░░░▓██▒░▒░░░░░░░░▒░░                              ░░░   
+███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████▓░   ░▒█▓▓▓▒░░░░            ░                                          ░           ░░            ░▒▓░░               ░░░▓█▓▓▒░░░░░░░░░░░░░░░░░░          ░░░░▒▒▒▒░░▓█▓░▒▒▒▒▓██▒░░░▒▒▒░░░░░░░░░                 ░░        ░░░░░░░░
+█████▓▒▓████████████████████████████████████████████████████████████████████████████████▓▓▓▓▓▓▓▓▓▓▓▓▓▓██▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓██▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓████████████████████████▓▒██▓░    ░░▓▓▓▓▓▓▓▓▓░      ░                                                                          ░▒▓▓▒░          ░░▒▒░▒██████░░░░░░░░░░░░   ░░           ░░▒░░░░░▓█▓▓▓▓█▓▓▓██░░░░▒▒▒░░░░░░░░                  ░░░░          ░░░░
+████▓▒▒████████████████████████████████████████████████████████████████████████████████▓▒▒▒▒▒░░░░░░░░▒▓█▒░░░░░░░░░░░░░▓██▒░░░░░░░░░░░░▒▒▒▒▒▒▒▒▒▒▒▒▒▓▓████████████████████▒░ ░▒░       ░░░░▒▓▒              ░░                                              ░                  ░   ░░▒▓▓▒     ░░░░░▒█▓▒░▒█████▓░░░░░░░░░░░░░░              ░░░░░▒████▓▒▒░░▒██▓░░▒▒░░░░░░░                   ░░░                  
+███████████████████████████████████████████████████████████████████████████████████████▓▒░░░░░░░░░░░░▒▓█▒░░░░░░░░░░░░░▓██▒░░░░░░░░░░░▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒███████████████████▓░░                            ░                                                                         ░░░░▓▓▓▓▓▒░░░░░░░░▓█▓▒▒▒▓████▒░░░░░░░░░░░░                 ░░░░▒▓▓░░░░░▒▓██░░▒▒░░░░░░░░░             ░░   ░░░░              ░░░
+▓██████████████████████████████████████████████████████████████████████████████████████▓▒░░░░░░░░░░░░▒▓█▒░░░░░░░░░░░░░▓██▒░░░░░░░░░░░░▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒█████████████████▓▓▓▓▒░                                                                                                     ░░░░░░▒▒▓▓█▓▓▒░░░░▒█▓░░░▒████▓░░░░░░░░░                     ░░░▒▓▒▒░░░░▒██▒░░░░░░░░░░░░░░            ░░   ░░░░░░░       ░░░░░░░
+████████▒▒█████████████████████████████████████████████████████████████████████████████▓▒▒▒░░░░░░░░░░▒▓█▒░░░░░░░░░░░░░▓██▒░░░░░░░░░░▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒█████████████▓▓▓▓▓▓▓▒░                                                                                    ░                    ░░░░░░░░▓███▓░░▒██▒░░░▓████▓░░░░░░░░                    ░░░░░░░░░░░░░░░░░░░▒░░░░░░░░░░                  ░░░░░░░░        ░░░░
+███████████████████████████████████████████████████████████████████████████████████████▓▒▒▒▒▒░░░░░░░░▒▓█▒░░░░░░░░░░░░░▓██▒░░░░░░░░░▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒███████████▓▓▓▓▓▓▓▓▓▓▓░                                                    ░░░                                            ░    ░░░░░░░░░░▒▓██▓▓▓█▒░░░▒█████▓░░░░░░░  ░░                ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░                 ░░░░░░           ░░▒
+█████████████████████████████████████████████████████████████████████████████████████████████▓███████████████████████████▒░░░░░░░░░▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒███████▓█▓▓▓▓▓▓▓▓▓▓▓▓▓░               ░                                ░░░░░░░░░░░                                     ░░░░░░░░░░░░░░░░░░░░░░▓▓▓▓▓░▒▒░▒██▓▓█▓░░░░░░░░░░                 ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░       ░                          ░░░
+███████████████████████████████████████████████████████████████████████████████████████▓▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒░░░░░░░░░░░░░▓██▒░░░░░░░░▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▓███████▓▓▓▓▓▓▓▓▓▓▓▓░ ░                     ░                           ░░░░░░░░░░░░                                   ░░░░░░░░░░░░░░░░░░░░░░░░▒█▓▓▓▒░░░▒▓▓▓▓▓▓▒░░░░░░░                  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░                                   ░░▒▓
+███████████████████████████████████████████████████████████████████████████████████████▓▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒░░░░░░░░░░░░░▓██▒░░░░░░░▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▓███████▓▓▓▓▓▓▓▓▓▓▓▓░                                                    ░░░░░░ ░░░░░░                                  ░░░░░░░░░░░░░░░░░░░░░░░▒▒▓▓▓▓▒░░░░▓▓▓▓▓▓▒░░░░░░░                 ░░░░░░░░░░░░░░░░░░░░░░░░░░░            ░░                      ▓██▓
+████████████████████████████████████████████████▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓███████▓▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒░░░░░░░░░▓██▒░░░░░▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▓███████▓▓▓▓▓▓▓▓▓▒                                    ░░      ░            ░░░░                           ░░            ░░░░    ░░░░░░░░░░░░░░▒▒▒░▓▓▓▓▓░░░░▒▓▓▓▓▓▒░░░░░░                ░░░░░░░░░░░░░░░░░░░░░           ░░░░░░                        ░██▒ ░
+████████████████████████████████████▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓██████▓▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒░░░░░░░░▓██▓░░▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▓▓██████▓▓▓▓▓▓▓▓▓▓▒░    ░                      ░░    ░░░░░          ░░  ░░░░░░░░░                         ░░░ ░░░░░░░░░      ░░   ░░░░░░░░░░░░░░░░░░▓▓▓▓▓▓▓▓▒▒▓▓▓▓▓▒░░░░░░░░         ░░░░░░░░░░░░   ░░░░░░░░░░       ░░░░░░░░░░░     ░░              ░▒█░    
+██████████████████████████████▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▒▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓██████▓▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▓██▓▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▓▓▓██████▓▓▓▓▓▓▓▓▒░              ░                    ░░░░░░░            ░░░░░░░░░                            ░░░░░░░░░░░░  ░░░░░░  ░░░░░░░░░░░░░░░░░░░▒▒▓▓▓▓▓▓▓▓▓▓▓▓░░░░░░░░░    ░░░░░░░░░░░░░░░░   ░░░░░░░░░░░       ░░░░░░░                         ░░░░   
+█████████████████████████▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░▒▓▓▓▓▓▓▓▓▓▓▓▓▓▓██████▓▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▓██▓▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▓▓▓▓▓██████▓▓▓▓▓▓▓▓░          ░░                         ░░░░░           ░░░░░░░░░░░                            ░░░░     ░░░░░░░░░░  ░░░░░░░░░░░░░░░░░░░░░░░░░▒▓▓▓▓▓▓▓▓▓░░░░░░░░░░░ ░░░░░░░ ░░░░░░░░░░░░░░░░░░░░░                                          ░░   
+███████████████████████▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓██████▓▓▓▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▓██▓▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▓▓▓▓▓▓▓██████▓▓▓▓▓▓▓▓▓▓░ ░░░  ░▒▒░                       ░                  ░░░░░▒▓▒░░░░                                              ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▓▓▓▓▓▓▓▒░░░░░░░░░░░            ░░░░░   ░░░░░░░░░                                       ░░░░    
+████████████████████▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓███████▓▓▓▓▓▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▓██▓▒▒▒▒▒▒▓▒▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓██████▓▓▓▓▓▓▓▓▓▓▒▒▒▓▒▒░▒▒▒▒░                                     ░░░░ ░░░░░░▒▒░░░                             ░░░  ░░  ░░░░░░░░░░░░  ░░░░░░░░░░░░░░░░░░░░░░░░▒▓▓▓▓▓▓▒░ ░░░░░                              ░  ░░                          ░░░░░░     ░░░    
+██████████████████▓██▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓█▓▓████████████████████████████████▓▓▓▓▓▓▓▓███▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓█▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▒▓▒▒░░                                     ░░░░░░░▒▒▒▓▓▓▓▓▓░░░░░                              ░░ ░░░  ░░░░░░░░    ░░░░░░░░░░░░░░░░░░░░░░░░▓▓▓▓▓▓░ ░░░░░░                                                          ░░░▒███▓░░      ░░░░
+████████████████████████████████▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓█████████████████████████████████████████████████████████▓▓▓▓▓▓▓▓▓▓▓▓▓▒▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▒▒░              ░                        ░░░░     ░░░░░░░  ░░                                                     ░░░░░░░░░░░░░░░░░░░░░░▓▓▓▓▓▒░░░░░░                                                          ░▒▒▓███▒░▒▒▒░  ░░░░░░
+████████████████████████████████████▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░░░░▒▓▓▓▓▓▓██████████████████████████████████████████████████████████████████████████▓▓▓▓▓▓▒▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▒▒▒▒▒░ ░░▒▒▒░░░                                                               ░             ░░░░ ░░                       ░░      ░░░░░░░▒▓▓▓▓▓░░░░░           ░                                          ░░ ░░░░▓███▒░░░▒████▒░░░░░
+███████████████████████████████████████▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░░░░░░▓████████████████████████████▓▓██▓▓▓██▓▓██▓▓███▓██▓▓██▓▓████████████▓▓████████████▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒░                            ░░░                                             ░░░░░                                 ░░░░░░░░▒▓▓▓▓▒     ░░                                                ░░░░░░░░▓███▓░▒▓█████▓▓▒░    
+████████████████████████████████████████▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▒░░░▓████████████████████████████████████████████████████████████████████████████████████▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▒▒▒▒▒▒▒▒▒▒▒▒▒░░░             ░░             ░░░                 ░░░░░                       ░░░░░                                 ░░  ░░░░░▓▓▓▓▓░░░░░░░░                                             ░░░░▒▒▒░░▓████████▓▒░░░░░░     
+███████████████████████████████████████████▓▓▓▓▓▓▓▓▓▓▓▓▓▓█████████████████████████████████████████████████████████████████████████████████████████▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░░      ▒▒▒▒▒▒░ ▒▒            ░                                        ░░░ ░░░░░░░░              ░░░░░░░                          ░           ░░░▓▓▓▓▓▓░   ░░░░         ░░                               ░░░░░▒▒▒░▒███████▒░░░░░░░   ░    
+██████████████████████████████████████████████▓▓███████████████████████████████████████████████████████████████████████████████████████████████████▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░░░       ░▒▒▒░░   ░▒▓▒░                                                   ░░░░░░              ░ ░░░░░░░░    ░░░              ░░░                ░░░░▒▒▓▓▒░                                      ░    ░░░        ▒▒▓█░▒███▒░░░░░░░░░░        
+█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████▓▓▓▓▓▓▓▓▓▓▓▓▒░░     ░░░           ░░░                                              ░░░░    ░░░░░     ░       ░░░░░░░░░░░░░░░░░                ░░                                                   ░░  ░░           ░░░░       ░▒▒▓█▓▒░░░▒░░░░░            
+██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████▓▓▓▓▓▓▓▓▓▓▓░      ░░░                                                             ░░░░    ░░░░░░ ░░░░░░░░ ░░░░░░░░  ░░░░░░░░░            ░░                                            ░░░ ░░░         ░░░        ░░░░░░         ░░░░  ░░░ ░░             
+███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████▓▓▓▓▓▓▓▓▓▓▓▒░░░░░                                                                ░░░░    ░░░░  ░░░░░░░░   ░░░░░░                     ░░░░░░░ ░░  ░      ░    ░░░                         ░░░░         ░░░       ░                          ░░░░░░░░░░░░░ 
+███████████████████▓░▓████████████████████████████████████████████████████████████████████▓████████████████████████████████████████████████████████████▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░                                                         ░░            ░░  ░░░░░░░░░░            ░░               ░░░░░       ░░░░    ░    ░░                          ░░░░                                            ░░░▒▒░░░ ░░▒▒░░░
+████████████████████▓█████████████████████████████████████████████████████████████████████▓█████████████████████████████████████████████████████████████▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▒░                                                          ░░░ ░░░       ░░░░░░             ░░  ░░░               ░░        ░░░░░         ░                                              ░░     ░░               ░░░░░░░░░░░░░░░░░░░░░
+█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▒░                                                 ░  ░░░  ░░░░▓░░░░░░░  ░░░░  ░░░          ░░░░░░░░░           ░░                       ░░░░                                ░          ░▓▒░                  ░░░░░░░░░░░░░░░░░░░░░░░░▒
+█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████▓▓▓▓▓▓▓▓▓▓▓▓▒░    ░                                              ░░░ ░░░░░░░  ░░▒▓▓░░░░░░░░░░░░░░░ ░░░░░░░░░░░░░░░ ░░░░░  ░░        ░░░░░░░        ░░      ░░                                       ░░▓▓▓░                      ░░░░░░░░░░░░░░░░░░░░▒▒▒
+███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████▓██████████████▓▓▓▓▓▓▓▓▓▓▓░                                                   ░░░░░░░   ░▒▒░░░ ░▓▓▒░░░▒▓▓▒░░░░░░░░░░░░░░░░▒▒░░   ░░░░░░         ░░░░░   ░░                       ░░                              ▒▓▓▓▒░                       ░░░░░░ ░░░░░░░░░░░░░░░▒
+███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████▓██████████████▓▓▓▓▓▓▓▓▓▓▓░                                               ░░    ░░░░░░░░░░░▒▒▓▓▒▒▒▓▓▒░░▒▓▓▒░░░░░░░░░░   ░░░▒▓▓▒▒▓▓▓░░░░░░░░░░░░░░░░░░         ░░░                ░░  ░░                        ░▓▒░░░░░                      ░░  ░░  ░░ ░░░░░░░░░░░░▒
+███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████▓░     ░▓▓▓▓▓▓▓▒░  ░░                                           ░        ░░░░░░░░░░░▒▓▓▓▓▒▒░░░░░░    ░░░░  ░░    ░▓▓▓▓▓▓▓░  ░  ░░ ░░░         ░░░░░░░░                                         ░░░▒▒▒░                          ░░░░ ░░░░░               
+███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████▓░      ▓▓▓▓▓▓▓▓▓▓▓▓░                       ░  ░░      ░░░░░░          ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ ░░░░░░░░░░ ░▒▓▓▓▓▓▒░░   ░░      ░░      ░    ░░░                                                                ░░░                             
+███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████░        ░▓▓▓▓▓▓░░░▒░    ░░░   ░▒▒░░        ░░░░░        ░░         ░░░░░░   ░░░░░░░░░░░░   ░░░░░░░░░░░░░░░    ░░░░░ ░░▓▓▓▓▒░░ ░░░░░░   ░░░░          ░░                                ░            ░░                                     ░            
+████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████        ░▒▓▓▓▒░                 ░▒▒░        ░ ░░░░░ ░░░░░░          ░░░ ░░░░ ░░░░  ░░░  ░░░░░░░░░░░░░░░        ░░░░    ░░▓▓▓░ ░░░░░░░░░░░░░ ░░                                        ░░░░          ░░░                                                 
+█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████▓░     ░▓▓▓▓▓░                   ▒▒▒░░░           ░░░░░     ░░░   ░     ░░░  ░░░ ░░░░  ░░░░░░░░░░                   ░    ░▓░         ░░░░                     ░                         ░▒▒░  ░                                                        
+███████████████████████████████████████████████████████████████████████████████████████████████████████████████▓░▓█████████████████████████████████████▓▒▓▒░        ▒▓▓▒░                   ░▒▒░               ░░░  ░░░░ ░░░░░░  ░░     ░░░░    ░░░░░                          ░░░                                                              ░░▓▓░                                                           
+██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████▒░            ░                                           ░░  ░░░░░░░░░░░     ░             ░░     ░░░                ░░░░░░░                 ░░░░        ░░░                 ░           ░▓▒░                                 ░░░    ░░░░   ░░░░░        
+███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████░░░░                                                              ░░ ░░░ ░                    ░░░    ░░░░        ░░        ░░░░░                 ░░░░         ░░                             ▒▒░                           ░     ░░░░░░░░░▒▒▒▒▒░░░░▒░        
+████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████▓▒░▒▒▓▓▓▓▒          ░                                                         ░░░░░ ░░░░                         ░░░░░░░                              ░░         ░░                  ░  ░░░           ░▒▒                           ░░░░         ░░░░▒▒▒░░░░░░░░░░░░░░░░
+████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████▒▒▒▒▒▒▓▓▓▓░                                                           ░░░     ░░░    ░░                             ░░░░    ░░░                   ░░ ░░░  ░░░░   ░░                     ░░░░         ░▒▒                   ░░░  ░░░░░░░░░░       ░▒▒▒▒░░░░░░░░░░░░░░░▒▒▓
+███▒▒███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████▓▒░░▒▓▓▓▓▓▓▒▒▒                                                        ░░░░░     ░    ░░░                                  ░░░░░  ░░░        ░░       ░░░░░░░░░░         ░░               ░░░        ░▒▒░           ░░░  ░░░░░░░░▒░▒░░░░░░░░░░    ░░░░░░░░░░░░░░░░░░░░▒▓▓
+███░░███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████▒░▓▓▓▓▓▓▓░▒▓ ░░                 ░                        ░░         ░░░                 ░░░                             ░░ ░                     ░▒▓▓▓░░            ░░░░░░      ░░              ▒▒░          ░░░░░░░░░░░░░░░░░░ ░░░░░░░░░░░░░░░░░░▒▒░▒▒▒▒░░░░░░░░░░░
+██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████▓▓▓▓▓▓▓▓▓▓▓▓▓▒░                                         ░░░░░░        ░ ░░░▒░░░░░░░                    ░                                      ░░░ ░▓▓▓▓▓▓▒         ░░░░░░  ░░░    ░░            ░▒▒░░         ░░  ░░░░░░░░░░░░░  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▒▒░  
+████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████▓▓▓▓▓▓▓▓▓░                      ░                 ░░░░░░░░░░     ░     ░░▒▓▓▓▓▒▒▒▒░░░░       ░░░                                            ░▒▓▓▓▓▒▒░  ░    ░░░░░                         ░░░░░  ░░   ░░░░  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▒▓▒▒░░░
+███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████▒░░                                      ░░░░░░░░                  ░░▒▓▓▓▓▓▓▓▓▓▒▒▒▒▒░ ░░░                 ░                            ░▒▓▒░░▓▒▓▓▓░    ░░              ░░░░░░     ░░░    ░░   ░░░░░░░░░░░░░░░░░░░░░░░░░░░▒░░░░░░░░░▒░░░░░░░░░░░░░░▒▒░░░▒░
+███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████░      ░             ░                 ░░░░                 ░        ░░░░░░░░▒▒▒▒▒░                                                  ░ ░░░▓▓▓▓▓▓▓▓▓▒░      ░░░       ░░░░░░░░           ░░░░░    ░░░░░░░░░░░░░░░░░░░░▒░░░░░░░░░░░░▒▒░░░░░░░░░░░░░▒▓▒░░░▒▒
+████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████▒      ░                  ░            ░░                             ░░░                                                           ░░░░░░▓▓▓▓▓▓▓▓▒░                ░░░░░░  ░░░    ░░░░░░░░░ ░░░░░░░░░░░░░░░░░░░░░░░▒▒░░░░░░░░▒▒▒▓▒░░░░░▒░░░░░░░▒▒▒▒░▒▒▒
+██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████▓▓▓▒░                                                                    ░                                                ░         ░░░░░░░░░▓▓▓▓▓▓▒░     ░             ░░░  ░░░░░  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▒▒▒▒▒▒▒▒▒▒▒▒░░░░▒▒▒▒░░░░░░░░░▒▒▒▒▒
+██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████▓▓▓▓▓▓▓░                    ░          ░░░                ░                                                                   ░   ░░░ ░  ░░░░░░░░▒▓▓▓▓░       ░░              ░░░░░░░░░░░░░░░░░▒░░░░░░░░░░░░░░░░░░░░░░░░░░░▒▒▒▒▓▓▒▒▒▒▒░░▒▒░▒▒▓▒▒░░▒▒▒▒▒▒░▒▒▒▒▒
+█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████▓▓▓▒░▒▓                            ░░  ░░░░                                                                                       ░░░       ░░ ░ ░░░▓▓▓▒░  ░░░  ░░░       ░░░░ ░░░░▒▒▒░░░ ░░▒░░░░░░░░░▒░░░░░░░░░░▒▒▒▒░▒▒░░░░▒▒▒▒▒▒▒▒▒▒░░░░░▒▒▒▓▓▒░░▒▒▒▒▒▒▒▓▒▒▒▒
+██████████████████████████████████▓░░████████████████████████▓░████████████████████████████████████████████████████████████████████████████████▓▓█▓░                 ░░░░░░░  ░░   ░▒░░░░░░                                                                      ░            ░░  ░░░░░    ░░░░░░  ░░░░▓▓▒░░░░░░░░░░░░   ░░░░░ ░░▒▒▒▒░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▒▒▒▒░▒▒▒▒▒▒▒▒░▒▓▓▒░░░▒▒▒▓▓▓▒▒▒▒▒▒▒▒▒▒▒▒░░░
+██████████████████████████████████▓▒▓█████████████████████████████████████████████████████████████████████████████████████████████████████████▓▓▓░░░                 ░░░░░▒▒▓░░░░░░░░░▓▒░░░                                                                                  ░░░  ░░░░░░░░░░░░░░░  ░░░░░▓▒░░░░░░░░░░░░░░ ░░░░░░░░▒▒▒░░▒░░▒░░░░░░░░░░░░▒▒▒░░░░▒░░░▒▒▒▒▒▒▒▒▒░▒▒▒▒▓▓▒░▒▒▒▒░░░▒▓▒▒▒▓▓▓▓▓▓▒▒▒▓▒▒▒▒░  
+█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████▓▓▓▓▓░                         ░░▒▒▓░░░░░░▒▓▓░░ ░░░                                                                             ░░░ ░░░░░░░░░░░░░░░░░░ ░░░░░   ░▒▒░░░░░░░    ░░░▒▒▒░░░░▒▒▒▒▒▒▒░░░░░░░░░░▒▒▒░░▒▒▒▓██▓▒▓▓▒▒▒▒░░░░░▒▒▒▒▒░░░░░░▒▒▓▓▓▒▒▒▒▒▓▓▓▒▒▒▒▒▒▒▒▒▒▒
+█████████████████████████████████████████████████████████████████████████████████████▓▓████████████████████████████████████████████████████▓▓▓▓▓▓░                              ░░░░░░▒▒▒▒▒▒▒▒░                                                               ░▒▒▒▓░░       ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▒▓███▒▒██▒░░░░░░░░░░░▒▒░▒▒▒▒▒▒▒▒░░░░░░░░░░░░░░▒▓█████▒▒▒░▒▒▒░░░░░▒▓▓▒▒▒▒▒▒▒▓▓▓▓▓▓▓▓▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒
+███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████▓▒▒▓█▓▒▓▓▓▓▓▓▒                                                                                                             ░░▒▒▓▓▒     ░▒▒▒▓████▒░░░░░░░░░░░░░░░░░░░░░▒███████████▒▒░░░░░░░░░░▓██▓▓▓▓░▒▒░░▓███▓▓▒░░░▒██████▓▒▒▒░░░▒▒▒░▒▒▓▓▓▒▒▒▒▒▒▒▒▒▒▓▒▒▒▒▓██▓▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒
+█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████▒            ░░                                       ░░░                   ░░░                                                ░░░░░    ░▓███████████▓░░░░▒░░░░░░░░░░░░░░▒███████████▒▒▒░░░░▒▒▒▒▓███████▒░░░██████▒▒▓██████▓▒▒▒▒░░░▒▒▒▒▒▒▒▒▒▒▒▒░░░▒▒▒▒▒▒▒▓█████████▓▒▒▓██████▓▒
+████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████▒                                ░░                   ░░░                        ░░     ░░░░                                          ░░░░▒▓█████████████▓▒▒░▒░░░░░░░░░░░░░███████████▓▒▒░░▒▓▒▒▒▒█████████████████▓████████▒▒▒▒▒▒▒▒▒▒▓▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▓████▓▓▓▓█████▓ ░▓█████
+████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████▓▒▓▒                                          ░░░                              ░░     ░░░░░                                     ░   ░░░░░░░ ░░▓███████████████████▓▓▓▒▒▒▒░░▓████████████░░░░▒▒▒▒▒█████████████████████████▓▒▒▓▒░▒░▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▓▓▓█▓▓▓█▓▓▒░      ░▓
+███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████▒                           ░              ░░░░    ░░░░  ░ ░░░░           ░░░     ░░░░░                                   ░░░░░░░░░░░░░░░░░░▒█████████████████████████████████████████▓▒▒▒▒▒▒▒███████████████████████▓▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▓▓▒▒▒▓░░░░▒░ ░         ░▒░
+██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████▓▓▓                  ░       ░            ░░░░░░░░ ░░░░░ ░░░░░░░░     ░░░   ░░░░░░   ░▒▓░          ░░░                     ░░░░  ░░░░░░░░░░░░░░▓██████████████████████████████████████████▓▒▒▒▒█████████████████████▓▒▒▒▒▒▓▒▒▒▒▒▒▒▒▓▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▓▓▓▓▓▓░                ░░░
+█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████▓█▓░                                    ░░░░░░  ░░░  ░░░ ░░░░░░   ░░        ░░░░░░▒▓▓▓▓▓▓▓▓░                                ░░░░░░░░░░░░░░░░░░░░░░░░░░▓█████████████████████████████████████▒▒▒▒▓████████████████████▒▒▒▒▒▒▓▒▒▓▓▓▓▓▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▓▓▓▓▓▓▓░░░░░░░░            
+████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████▓▓▓▓░                   ░░           ░░░░░░░░░           ░░░░░   ░░░ ░░▒▓▓▓▓▓▓▓▓▓▓▓▓▓▒▒░░░░░  ░░░░                          ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▒▒▓▓▓████████████████████████████████▓▒▒████████████████████▒▒▒▒▒▒▒▒▒▓██▓▓▓▓▓▒▒▒▒▒▒▒▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░           
+████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████▓▓▓░                                 ░░░░░░░         ░░░░░░░░░░░░░░▒▓▓▓▓▓▓▒▒░▒▒▒▒▒░░  ░░░░     ░░                          ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▒▓█████████████████████████████▓████████████████████▒▒▒▒▒▒▒▒▒▓▓███▓▓▓▓▒▒▒▓▓███▓▓▒▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░░           
+████████████▓██████████████████████████████████████████████████████████████████████████████████████████████████████████████▓                                    ░░    ░░░░░░░    ░░░  ░░░░░░░░░▒▓▓██▓▒░░░░░░░░░░░░░░░░░░               ░░                   ░░░░░░░░░░░░░░░░░░░░░▒▒▒░░░░░░▒▒░░░▒▒▒▒▒▓██████████████████████████████████████████████▒▒▒▒▒▒▒▓▓▓▓▓▓▓▓▓███▓████████▓▓▒▓▓▓▒▓▓▓▓▓▓▓▓▓▓▓▓▓░            
+████████████░▒████████████████████████████████████████████████████████████████████████████████████████████████████████████▓▓░                       ░░          ░░          ░░░░░░░░░░░░▒▓█▓▒░▒▓██▓░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░                     ░░░░░░░░░░░▓▓▒░▒▓▒▒▒▒▒▒▒▒▒▒▒▓▒▒░░░▒▒▒▒▒▒▒▒▒███████████████████████████████████████████▓▒▓▓▒▒▒▓▓▓█▓▓▓▓█▓▓████████████▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░░░          
+█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████▒                    ░░        ░░ ░░░░░░░░ ░░░░   ░░░░░░░▒▒▒▒▒░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ ░░ ░░                     ░░░░░░░░░░░░▒▓█████████▓▒▓▓▓▓▓▒░░░▒▒▒▒▒▒▒░░▒▒▒▒▓████████████████████████████████████████▓▒▓▒▒▒▒▒▓▓▓▓▒▒▓▓▓██▓▓▓▓▓▓██▓▓▓▓▓▓▓▓█▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▒░        
+████████████████████████████████████████████████▓▒█████████████████████████████████████████████████████████████████████▒░                    ░░    ░    ░░   ░░░░░░░░░░░░░░░░░░░░ ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ ░ ░░                    ░░░░░░░░░░▓▓▓▓█████████▓▓▒░░▒▒░░░░░░░░▒░░░░░▒▒▒▒▒▓▒▓██████████████████████████████████████▓▓▓▓▓▒▒▒▒▓▓▓▓▓█▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓█████▓▓█▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▒░     
+████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████▓▒▒▒█▓░░░▒░░░░              ░░░   ░░ ░░░░░░░░░░░░░░░░░░  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░                  ░░░░░░░░░▓████████████▒░▒▒░▒▒▒░░▒▒▒▒░░░░░▒▒▒▒▒▒▓▒░▒▓▓▒▓███████████████████████████████████▓▓▓▓▓▓▒▓▓▓▓▓▓█▓██████████████████████████▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
+███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████▓▓▒     ░        ░░░ ░░░░░░░░░░░░░░░          ░░░░░░░░░░░░░░▓▒░░░░░░░░░░░   ░░░░░░ ░░░░░░░░░░░░░░░░                  ░░░▓▓▓▓▓▓▓██▓▒▓████▓▓░░░░░▒▒▒▒▒▒▒▒▒░░▒▒▒▒▒▒▒▒▒▓▓▒▒▓▓▒▒▒▒▒██▓█████████████████████████████▓▓▓▓▓██████▓██████████▓▓▓▓▓▓▓▓▓▓█████████████▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
+██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████▓░   ░▓▒▓▓░▒░░      ░░░░░░░░░░░░░░░░          ░░░░░░░░▒▓████▓▓▒▒░░░░░░░░             ░░░░░░░░░░░░░░░                  ░░░▒▓▓▓▓▓▓███▒▓████▓░░░░░▒▒▒▒▒▒▒▒▒▒░▒▒▒▒▒▒▓▓▓▓▓▓▓▓▓▓▓▒▒▒▓▒▓██████████████████████████████████████▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓███████▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
+████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████▓▒▒░▓▓▓▓▓▓░         ░░░░░     ░░           ░░░░░░░░▓███▓▒░░░░░░░░░░░░              ░░░░░░░░░░░░░░          ░░       ░░░░░▒▓█████████████▒▒░▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▓▓▓▓▓▓▓▓▓▓▓▓▓▓▒▒▒▒████████████████████████████████████▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓█████▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
+███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████▓████████████████▓▓▓▓▓▓▓▓▒░ ░░                       ░░░░░░░░▒▓██▓▒░░░░░░░░░░░░░░ ░░░░    ░░░░░░░░░░░░░░░░░░            ░░░░░░░░░░░░░░░▒▒██████████▓▒▒▒▒▒▒▒▒▒▒░▒▒▒▓▓▓▓▓██████████▓▓▓▓▓▓▓██████████████████████████████████████▓▓▓▓▓░░▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓███▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
+██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████▓▓▓▓▓▓▓▓▓▓▒                   ░░░░░░░░▒▒▓██▓▒░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░           ░░░░░░░░░░░░░░░░░▓▓▓▓▓▓███▓▓▒▒▒▒▒▒▒▒▒▒▒▒▒▓▓▓▓▓▓▓▓▒▒▒▒▒▓█████████████████████████████████████████████▓▓▓▓▓▓▒░▒▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓██▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓█▓▓
+██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████▓▓▒▒░░  ░░░ ░░░              ░░░░░░▒▓█▓▓▒▒░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░        ░      ░░░░░░░   ░░░░░░░▒▒▓▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▓▓▒▒▒▒▒▒▒▒▒▓▓██████████████████████████████████████▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓███▓▓▓▓▓▓▓▓▓▓██████
+███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████▓        ░░░░░░           ░░░░░▒▓▒░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▒▒▒░░░░░░░░░░░░░░░░░░░░░░░               ░░        ░▒▒▒▒▒▒▒▒▓▓▒▒▒▒▓▒▒▒▒▓▒▒▒▒▒▒▒▓▒▒▒▒▓▓▓▓▓▓▓▓▓▓▓▓███████████████████████████████████▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓████▓███████▓▓▓▓▓▓▓▓▓███▓███▓████████████████████
+███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████▓      ░░░░░░░░        ░░░░░░░░░   ░░░░░░░░░░░░░░░░░░▒▒▒░  ░░▒░░░░░░░▒▒░░░░░░░░░░░░░░░░                               ░▒▒▒▒▒▓████▓▓▒▒▒▒▒▓▒▒▓▒▒▒▒▓▓▒▒▒▒▒▓▓▓▓▓▓▓▓▓▓▓▓▓▓████████████████████████████████▓▓▓▓▓▓▓▓▓▓▓▓███████████████▓▓▓▓▓▓▓▓▓▓▓██████████████████████████
+██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████▓▒░░      ░▓▓▓▒░░░░░▒▒░    ░░░          ░░░░▒░░░░░░░░░░▒▒▓▓▓▓░    ▒▒░░░░░░░░░░░░▒▒░░░░░░░░░              ░░░░             ░▒▒▒▒▒▓▓████▓▒▒▒▒▒▒▒▒▓▒▒▒▒▓▓▓▓▓▒▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓█████████████████████████████▓▓▓▓▓▓▓▓▓▓█████████████████████▓▓▓▓▓██▓▓█████████████████████████
+█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████▒          ▒▓▓▓▓▓▓▓▒▓▓▒░           ░░  ░▒▒▒▓▒▒▒▒▒░░▒▒░░░▓▓▓▓▓▓▓░  ░░▒░▒░░▒▒░░░░░▒▒▒▒░░░░░░░░              ░░░▒▒▒▒▒▒░ ░▒▒▒▒▒▒▒▓▓▓█████████▓▒▒▒▒▒▒▒▒▒▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓███████████████████████████▓▓▓▓▓▓▓▓▓▓▓▓▓▓█▓▓▓█████████████████▓▓██▓▓████████████████████████
+███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████▓  ▒█░   ░▒▓▓▓███▓▓▒░    ░░░  ░░░▒▓░░▓▓▓▓▓▓▒▒▒▓▓▒▒▒▒▒▒▓▓▓▓▓▓▒    ░▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒░▒▒▒               ░▒▒▒▒▒▒▒▒▒▒▓▓▓▓███████████████▓▒▒▒▓▓▓▓▓▓▓▓▓▓▓▓▓███▓▓▓██▓▓██▓▓▓▓▓▓▓██████████████████████████▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓███▒▒███████████████████████████████████████████
+████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████▒░▓██▓░░ ░▒▓▓███▓▓▓░    ░▒░ ░▒▒▒▒▒▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▒░       ░▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒░     ░░░     ░▒▒▒▒▒▒▒▒▒▒▒▓██████████████████▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓████████▓▓███▓▓▓▓▓▓▓▓▓████████████████████████▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓██████████████████████████████████████████████████
+████████████████████████▓▓███████████████████████████████████████▒▓█████████████████████████████████████████████████████████████████████▒▓███▓▓▒▒▒▒▓▓▓▓▓░░░      ░▒▒▒▓▓▓▓▓▓▓ ▒▓▓▓▓▓▓▓▓▓▓▓▓▓▓▒░░░        ░░▒▒▒░▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒░░░▒▒▒▒▒░  ░▒▒▒▒▒▒▒▒▒▒▒▒▓▓████████████████▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓█████▓▓▓▓▓▓▓█▓▓▓▓▓▓▓▓▓▓████████████████████████▓▓▓▓▓▓▓▓▓▓▓▓████████████████████████████████████████████████████
+█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████▓▓▓▓▓▓▓▒           ░░▒▓▓▓▓▒▓▓▓▓▓▓▓▓▓▓▓▓▓▒░░     ░▒▒░░░▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒░░▒▒▒▒▒▒▒▒▒▒▓▓██████████████████▓▓▓▓▓▓▓▓▓▓▓████████▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓██████████████████████▓▓▓▓▓█▓▓▓▓▓▓█████████████████████████████████████████████████████
+█████████████████▓▒█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████▓▓▓▓▓▓▓▓▓▓▒░  ░░     ░▒▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓██▓░     ░▒▒▒▒▒▒▒░ ░▒▒▒▒▒▒▒▒▓▓▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▓███████████████████████▓▓▓▓▓▓▓██████▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓████████████████████████████████████████████████████████████████████████████████████████
+██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████▓▓▓▓▓▓▓▓▓▓░░▒▓▒░  ░ ▒▓▓▓▓▓▓▓▓▒▒▒▒▓█▓░▒▒░              ░░▒▒▒▒▒▒▒▓▓▓     ░▒░░░▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▓▓▓▓▓▓▓▓███████████████████████████████▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓██████████████████████████████████████████████████████████████████████████████████████████
+████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████▓▓▓▓▓▓▓▓▓▓▓▓▓░ ▒▓▓▓▓█████▓▒▒▒▒▒▒█▓░  ░░░░  ░░ ░ ░   ░░▒▒▒▓▓▓▓▓▓▒    ░▒░░  ░▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▓▓▓▓▓▓▓▓█████████████████████████████████▓▓▓▓▓▓▓▓▓▓███████▓▓▓██████████████████████████████████████████████████████████████████████████████████████████
+██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓██████████▒▒▒▓██▓▒▓█████▒▒▓▒▓░          ░▓▓▓▓▓▓░   ░▒              ░▒▒▒▒▒▒▒▒▒▒▒▒▒▓▒▒▓▓▓▓██████████████████████████████████▓▓▓▓▓▓▓▓▓▓▓▓████████▓▓▓██████████████████████████████████████████████████████████████████████████████████████████
+█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████▓▓▓▓▓▓█████████████████████▓░░██████▓▒▒▒▒░   ░░░▓▓▓▓▓▓▓▓▓▓▓▓▓▒░░▒▓▒▒▒        ░░▒▒▒▒▒▓▓▓▒▒▒▒▒▓▓▓▓▓▓▓▓██████████████████████████████████▓▓▓▓▓▓▓▓▓▓▓▓▓█████▓▓▓▓▓▓▓▓▓█████████▓░▒██████████████████████████████████████████████████████████████████████████
+█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████▓░     ░░▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░       ░▒▒▒▒▓▓▓██▓▒▓▓▓▓▓▓▓▓▓▓▓▓▓████████████████████████████████▓▓▓▓▓▓▓██▓▓▓▓████████████▓▓▓██████████████████████████████████████████████████████████████████████████████████████
+█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████░      ████▓▓▓▓▓▓▓▓▓▓▓▓▓▓██████▓░    ░▒▒▒▓▓▓▓██▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓██████████████████████████████████▓▓▓▓▓████████████████████▓▓▓██████████████████████████████████████████████████████████████████████████████████████
+████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████▓ ▒██████████████████████████████▓░░░░░░▓████████████████████████▓▒░   ▒▓▓▓█████▓▓▓▓▓▓▓▓▓▓▓▓█████████████████████████████████████▓▓▓▓▓▓█████████████████████████████████████████████████████████████████████████████████████████████████████████████
+████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████▓▒▓███████████████████████████████████████████████████████████████▒░    ░▒████████▓▓▓▓▓▓▓▓▓▓████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████
+██████████████████████████▒████████████████████████████████▓████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████▓░ ▓██████████▓▓███▓▓▓▓▓▓███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████
+█████████████████████████▓░███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████▓███████████████████████████████████████████████████████▓▓████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████
+██████████████████████████████████████████████████████████████████████████████████████████████████████████▓█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████
+████████████████████████████████████████████████████████████████████████████████████████████████████████▓░▒████████████████████████████████████████████████████████████████████████████████████▒▓███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████
+██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████▓▒████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████
+████████████████████████████████████████████████████████████████████████▒▒███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████▓░ ████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████
+█████████████▓██████████████████████████████████████████████████████████░▒████████████████████████████████████████▓▒█████████████████████████████████████████████████████▓▓█████████████████████████████████████████████████████████████████████████████████▓▓██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████
+██████████████████████████████████████████████████████████████████████████████████████████████████████████████████▒▓████████████████████████████████████████████████████▓▓████████████████████████████▓▒████████████████████████████████████████████████████▓███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████
+█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████▒▒███████████████████████████████████▒░████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████
+██████████████████████████████████████████████████████▓█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████
+███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████▒░███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████                                                                                                                                                                                                                                                                                                                                                                                              
+                 follow Azirkerpro09 on roblox     <<  ]]                                                                                                                                                                                                                                                                                                                                                                                        
+                                                                                                                                                                                                                                                                                                                                                                                                                
